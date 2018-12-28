@@ -46,6 +46,8 @@ public class TwitterProducer {
 
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
 
+        addShutdownHook(client, kafkaProducer);
+
         while (!client.isDone()) {
             String twitterMessage = null;
             try {
@@ -60,6 +62,16 @@ public class TwitterProducer {
             }
         }
         logger.info("End off application");
+    }
+
+    private void addShutdownHook(Client client, KafkaProducer<String, String> kafkaProducer) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Stopping application...");
+            client.stop();
+            kafkaProducer.close();
+            logger.info("Application was closed!");
+        }
+        ));
     }
 
     private void onCompletion(RecordMetadata recordMetadata, Exception e) {

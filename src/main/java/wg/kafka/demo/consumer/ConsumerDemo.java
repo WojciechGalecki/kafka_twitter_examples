@@ -1,4 +1,4 @@
-package wg.kafka.consumer;
+package wg.kafka.demo.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -6,7 +6,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wg.kafka.properties.PropertiesDemo;
+import wg.kafka.demo.properties.PropertiesDemo;
 
 import java.time.Duration;
 import java.util.Collections;

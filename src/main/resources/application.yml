@@ -1,0 +1,9 @@
+kafka:
+  bootstrap.servers: 127.0.0.1:9092
+  key.serializer: org.apache.kafka.common.serialization.StringSerializer
+  value.serializer: org.apache.kafka.common.serialization.StringSerializer
+  key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  group.id: wg.kafka
+  auto.offset.reset: earliest
+  topic: twitter_tweets

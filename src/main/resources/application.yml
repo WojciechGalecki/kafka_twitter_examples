@@ -14,4 +14,10 @@ kafka:
   retries: 2147483647
   # kafka 2.0 >= 1.1 so we can keep this as 5, use 1 otherwise
   max.in.flight.requests.per.connection: 5
+  # high throughput producer configuration (latency and CPU usage)
+  compression.type: snappy
+  linger.ms: 20
+  # 32KB
+  batch.size: 32768
+  # topics name
   topic: twitter_tweets

@@ -8,4 +8,5 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
-secrets.yml
+kafka-producer-twitter/src/main/resources/twitter-secrets.yml
+kafka-consumer-elasticsearch/src/main/resources/elasticsearch-secrets.yml

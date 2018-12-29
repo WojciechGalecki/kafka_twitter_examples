@@ -7,7 +7,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wg.kafka.twitter.client.TwitterClient;
-import wg.kafka.twitter.properties.KafkaProperties;
+import wg.kafka.commons.properties.KafkaProperties;
 
 import java.io.IOException;
 import java.util.Properties;

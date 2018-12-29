@@ -1,5 +1,7 @@
 package wg.kafka.twitter.properties;
 
+import wg.kafka.commons.properties.PropertiesLoader;
+
 import java.io.IOException;
 import java.util.Properties;
 

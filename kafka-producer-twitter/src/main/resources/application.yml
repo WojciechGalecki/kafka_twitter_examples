@@ -1,0 +1,23 @@
+kafka:
+  bootstrap.servers: 127.0.0.1:9092
+  key.serializer: org.apache.kafka.common.serialization.StringSerializer
+  value.serializer: org.apache.kafka.common.serialization.StringSerializer
+  key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  group.id: wg.kafka
+  auto.offset.reset: earliest
+  # safe producer configuration to avoid losing data
+  enable.idempotence: true
+  # leader + replicas acknowledgment (no data loss)
+  acks: all
+  # Integer.MAX_VALUE
+  retries: 2147483647
+  # kafka 2.0 >= 1.1 so we can keep this as 5, use 1 otherwise
+  max.in.flight.requests.per.connection: 5
+  # high throughput producer configuration (latency and CPU usage)
+  compression.type: snappy
+  linger.ms: 20
+  # 32KB
+  batch.size: 32768
+  # topics name
+  topic: twitter_tweets

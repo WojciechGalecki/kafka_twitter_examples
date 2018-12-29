@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class TwitterClient {
-    private static final String RESOURCE_FILE_NAME = "secrets.yml";
+    private static final String RESOURCE_FILE_NAME = "twitter-secrets.yml";
     private static final String TWITTER_MSG_KEY_WORD = "kafka";
 
     private TwitterProperties twitterProperties;

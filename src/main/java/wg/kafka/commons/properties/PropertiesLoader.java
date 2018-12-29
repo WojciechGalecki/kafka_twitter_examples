@@ -1,4 +1,4 @@
-package wg.kafka.twitter.properties;
+package wg.kafka.commons.properties;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -50,6 +50,7 @@ public class ElasticSearchConsumer {
         while (true) {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(POLL_VALUE_MS));
 
+            logger.info("Received " + records.count() + " records");
             for (ConsumerRecord<String, String> record : records) {
                 String tweetId = extractIdFromTweet(record.value());
                 IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, tweetId)
@@ -58,12 +59,21 @@ public class ElasticSearchConsumer {
                 IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
                 logger.info(indexResponse.getId());
 
-                try {
-                    Thread.sleep(SLEEP_VALUE_MS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                sleep(SLEEP_VALUE_MS);
             }
+            logger.info("Committing offsets...");
+            kafkaConsumer.commitSync();
+            logger.info("Offsets have been committed");
+
+            sleep(SLEEP_VALUE_MS);
+        }
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

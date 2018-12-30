@@ -19,5 +19,8 @@ kafka:
   linger.ms: 20
   # 32KB
   batch.size: 32768
+  # disable auto commit of offsets
+  enable.auto.commit: false
+  max.poll.records: 10
   # topics name
   topic: twitter_tweets

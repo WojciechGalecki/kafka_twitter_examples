@@ -4,7 +4,7 @@ kafka:
   value.serializer: org.apache.kafka.common.serialization.StringSerializer
   key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-  group.id: wg.kafka
+  group.id: wg-kafka-elasticsearch
   auto.offset.reset: earliest
   # safe producer configuration to avoid losing data
   enable.idempotence: true
@@ -19,5 +19,8 @@ kafka:
   linger.ms: 20
   # 32KB
   batch.size: 32768
+  # disable auto commit of offsets
+  enable.auto.commit: false
+  max.poll.records: 10
   # topics name
   topic: twitter_tweets

@@ -1,5 +1,6 @@
 package wg.kafka.elasticsearch.consumer;
 
+import com.google.gson.JsonParser;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -24,6 +25,7 @@ public class ElasticSearchConsumer {
     private static final String TOPIC_NAME_PROPERTY = "topic";
     private static final long SLEEP_VALUE_MS = 1000;
     private static final long POLL_VALUE_MS = 100;
+    private static final String TWEET_ID_JSON_VALUE = "id_str";
 
     Logger logger = LoggerFactory.getLogger(ElasticSearchConsumer.class.getName());
 
@@ -49,7 +51,8 @@ public class ElasticSearchConsumer {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(POLL_VALUE_MS));
 
             for (ConsumerRecord<String, String> record : records) {
-                IndexRequest indexRequest = new IndexRequest(INDEX, TYPE)
+                String tweetId = extractIdFromTweet(record.value());
+                IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, tweetId)
                         .source(record.value(), XContentType.JSON);
 
                 IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
@@ -68,5 +71,13 @@ public class ElasticSearchConsumer {
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(properties);
         kafkaConsumer.subscribe(Collections.singleton(topicName));
         return kafkaConsumer;
+    }
+
+    private String extractIdFromTweet(String jsonTweet) {
+        JsonParser jsonParser = new JsonParser();
+        return jsonParser.parse(jsonTweet)
+                .getAsJsonObject()
+                .get(TWEET_ID_JSON_VALUE)
+                .getAsString();
     }
 }

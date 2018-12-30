@@ -4,7 +4,7 @@ kafka:
   value.serializer: org.apache.kafka.common.serialization.StringSerializer
   key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-  group.id: wg.kafka
+  group.id: wg-kafka-elasticsearch
   auto.offset.reset: earliest
   # safe producer configuration to avoid losing data
   enable.idempotence: true

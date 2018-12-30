@@ -1,6 +1,8 @@
 package wg.kafka.elasticsearch.consumer;
 
-import org.apache.lucene.index.IndexOptions;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -12,11 +14,16 @@ import wg.kafka.commons.properties.KafkaProperties;
 import wg.kafka.elasticsearch.client.ElasticSearchClient;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.Collections;
 import java.util.Properties;
 
 public class ElasticSearchConsumer {
     private static final String INDEX = "twitter";
     private static final String TYPE = "tweets";
+    private static final String TOPIC_NAME_PROPERTY = "topic";
+    private static final long SLEEP_VALUE_MS = 1000;
+    private static final long POLL_VALUE_MS = 100;
 
     Logger logger = LoggerFactory.getLogger(ElasticSearchConsumer.class.getName());
 
@@ -36,14 +43,30 @@ public class ElasticSearchConsumer {
     public void run() throws IOException {
         RestHighLevelClient client = elasticSearchClient.getElasticSearchClient();
 
-        String jsonString = "{ \"foo\": \"bar\"}";
+        KafkaConsumer<String, String> kafkaConsumer = getKafkaConsumer(properties.getProperty(TOPIC_NAME_PROPERTY));
 
-        IndexRequest indexRequest = new IndexRequest(INDEX, TYPE)
-                .source(jsonString, XContentType.JSON);
+        while (true) {
+            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(POLL_VALUE_MS));
 
-        IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
-        logger.info(indexResponse.getId());
+            for (ConsumerRecord<String, String> record : records) {
+                IndexRequest indexRequest = new IndexRequest(INDEX, TYPE)
+                        .source(record.value(), XContentType.JSON);
 
-        client.close();
+                IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
+                logger.info(indexResponse.getId());
+
+                try {
+                    Thread.sleep(SLEEP_VALUE_MS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private KafkaConsumer<String, String> getKafkaConsumer(String topicName) {
+        KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(properties);
+        kafkaConsumer.subscribe(Collections.singleton(topicName));
+        return kafkaConsumer;
     }
 }

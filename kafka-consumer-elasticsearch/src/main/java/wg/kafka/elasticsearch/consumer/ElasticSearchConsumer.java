@@ -4,8 +4,9 @@ import com.google.gson.JsonParser;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -50,22 +51,33 @@ public class ElasticSearchConsumer {
         while (true) {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(POLL_VALUE_MS));
 
-            logger.info("Received " + records.count() + " records");
-            for (ConsumerRecord<String, String> record : records) {
-                String tweetId = extractIdFromTweet(record.value());
-                IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, tweetId)
-                        .source(record.value(), XContentType.JSON);
+            Integer recordCount = records.count();
+            logger.info("Received " + recordCount + " records");
 
-                IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
-                logger.info(indexResponse.getId());
+            BulkRequest bulkRequest = new BulkRequest();
+
+            for (ConsumerRecord<String, String> record : records) {
+                try {
+                    String tweetId = extractIdFromTweet(record.value());
+                    IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, tweetId)
+                            .source(record.value(), XContentType.JSON);
+
+                    bulkRequest.add(indexRequest);
+                } catch (NullPointerException e) {
+                    logger.warn("Skipping bad data: " + record.value());
+                }
+
+            }
+
+            if (recordCount > 0) {
+                BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+
+                logger.info("Committing offsets...");
+                kafkaConsumer.commitSync();
+                logger.info("Offsets have been committed");
 
                 sleep(SLEEP_VALUE_MS);
             }
-            logger.info("Committing offsets...");
-            kafkaConsumer.commitSync();
-            logger.info("Offsets have been committed");
-
-            sleep(SLEEP_VALUE_MS);
         }
     }
 

@@ -1,0 +1,8 @@
+kafka:
+  bootstrap.servers: 127.0.0.1:9092
+  application.id: demo-kafka-streams
+  default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  topic-from: twitter_tweets
+  topic-to: important_tweets
+

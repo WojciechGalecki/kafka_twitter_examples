@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class TwitterProducer {
-    private static final String TOPIC_NAME = "topic";
+    private static final String TOPIC_NAME_PROPERTY = "topic";
     private static final int BLOCKING_QUEUE_CAPACITY = 100000;
     private static final long TIMEOUT_S = 5;
 
@@ -57,7 +57,7 @@ public class TwitterProducer {
                 client.stop();
             }
             if (twitterMessage != null) {
-                kafkaProducer.send(new ProducerRecord<>(properties.getProperty(TOPIC_NAME), null, twitterMessage),
+                kafkaProducer.send(new ProducerRecord<>(properties.getProperty(TOPIC_NAME_PROPERTY), null, twitterMessage),
                         this::onCompletion);
             }
         }
